@@ -377,6 +377,14 @@ func TestSchemaExtensions(t *testing.T) {
 			},
 			false,
 		},
+		{
+			`{"type": ["string"], "x-ogen-name": "Foo"}`,
+			&Schema{
+				Type:      String,
+				XOgenName: "Foo",
+			},
+			false,
+		},
 		// Unexported type name.
 		{`{"type": "string", "x-ogen-name": "foo"}`, nil, true},
 		// Invalid type.
