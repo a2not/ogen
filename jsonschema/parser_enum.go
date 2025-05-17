@@ -10,19 +10,19 @@ import (
 	"github.com/ogen-go/ogen/internal/xslices"
 )
 
-func inferJSONType(v json.RawMessage) (string, error) {
+func inferJSONType(v json.RawMessage) (RawType, error) {
 	d := jx.DecodeBytes(v)
 	switch tt := d.Next(); tt {
 	case jx.String:
-		return "string", nil
+		return RawType{"string"}, nil
 	case jx.Number:
-		return "number", nil
+		return RawType{"number"}, nil
 	case jx.Bool:
-		return "bool", nil
+		return RawType{"bool"}, nil
 	case jx.Null:
-		return "", errors.Errorf("cannot infer type from %q", v)
+		return nil, errors.Errorf("cannot infer type from %q", v)
 	default:
-		return "", errors.Errorf("invalid value %q", v)
+		return nil, errors.Errorf("invalid value %q", v)
 	}
 }
 

@@ -248,7 +248,7 @@ func (p *Parser) parseSchema(schema *RawSchema, ctx *jsonpointer.ResolveCtx, hoo
 		return s, nil
 	}
 
-	if schema.Type == "" && p.inferTypes {
+	if len(schema.Type) == 0 && p.inferTypes {
 		switch {
 		case len(schema.Default) > 0:
 			schema.Type, err = inferJSONType(json.RawMessage(schema.Default))
@@ -269,25 +269,25 @@ func (p *Parser) parseSchema(schema *RawSchema, ctx *jsonpointer.ResolveCtx, hoo
 				schema.PatternProperties != nil ||
 				schema.MaxProperties != nil ||
 				schema.MinProperties != nil:
-				schema.Type = "object"
+				schema.Type = RawType{"object"}
 
 			case schema.Items != nil ||
 				schema.UniqueItems ||
 				schema.MaxItems != nil ||
 				schema.MinItems != nil:
-				schema.Type = "array"
+				schema.Type = RawType{"array"}
 
 			case schema.Maximum != nil ||
 				schema.Minimum != nil ||
 				schema.ExclusiveMinimum ||
 				schema.ExclusiveMaximum || // FIXME(tdakkota): check for existence instead of true?
 				schema.MultipleOf != nil:
-				schema.Type = "number"
+				schema.Type = RawType{"number"}
 
 			case schema.MaxLength != nil ||
 				schema.MinLength != nil ||
 				schema.Pattern != "":
-				schema.Type = "string"
+				schema.Type = RawType{"string"}
 			}
 		}
 	}

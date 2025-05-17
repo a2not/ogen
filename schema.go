@@ -22,7 +22,7 @@ type Schema struct {
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
 
 	// Value MUST be a string. Multiple types via an array are not supported.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type Type `json:"type,omitempty" yaml:"type,omitempty"` // TODO: ?
 
 	// See Data Type Formats for further details (https://swagger.io/specification/#data-type-format).
 	// While relying on JSON Schema's defined formats,
@@ -31,7 +31,7 @@ type Schema struct {
 
 	// Property definitions MUST be a Schema Object and not a standard JSON Schema
 	// (inline or referenced).
-	Properties Properties `json:"properties,omitempty" yaml:"properties,omitempty"`
+	Properties Properties `json:"properties,omitempty" yaml:"properties,omitempty"` // TODO: similar
 
 	// Value can be boolean or object. Inline or referenced schema MUST be of a Schema Object
 	// and not a standard JSON Schema. Consistent with JSON Schema, additionalProperties defaults to true.
@@ -242,6 +242,83 @@ type Schema struct {
 	ContentMediaType string `json:"contentMediaType,omitempty" yaml:"contentMediaType,omitempty"`
 
 	Common jsonschema.OpenAPICommon `json:"-" yaml:",inline"`
+}
+
+// Type is unparsed JSON Schema type validator description.
+type Type []string
+
+// MarshalYAML implements yaml.Marshaler.
+func (t Type) MarshalYAML() (any, error) {
+	if len(t) == 1 {
+		return &yaml.Node{
+			Kind:  yaml.ScalarNode,
+			Value: t[0],
+		}, nil
+	}
+	content := make([]*yaml.Node, 0, len(t))
+	for _, typ := range t {
+		content = append(content,
+			&yaml.Node{Kind: yaml.ScalarNode, Value: typ},
+		)
+	}
+
+	return &yaml.Node{
+		Kind:    yaml.SequenceNode,
+		Content: content,
+	}, nil
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (t *Type) UnmarshalYAML(node *yaml.Node) error {
+	switch node.Kind {
+	case yaml.ScalarNode:
+		// TODO: valid type name?
+		t = &Type{node.Value}
+		return nil
+	// TODO: implement
+	// case yaml.SequenceNode:
+	default:
+		return &yaml.UnmarshalError{
+			Node: node,
+			Type: reflect.TypeOf(t),
+			Err:  errors.Errorf("cannot unmarshal %s into %T", node.ShortTag(), t),
+		}
+	}
+}
+
+// MarshalJSON implements json.Marshaler.
+func (t Type) MarshalJSON() ([]byte, error) {
+	// TODO: error on empty type array?
+	e := &jx.Encoder{}
+	if len(t) == 1 {
+		e.Str(t[0])
+	} else {
+		e.ArrStart()
+		for _, typ := range t {
+			e.Str(typ)
+		}
+		e.ArrEnd()
+	}
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (t *Type) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	if typ, err := d.Str(); err == nil {
+		t = &Type{typ}
+		return nil
+	}
+
+	d = jx.DecodeBytes(data)
+	return d.Arr(func(d *jx.Decoder) error {
+		typ, err := d.Str()
+		if err != nil {
+			return err
+		}
+		*t = append(*t, typ)
+		return nil
+	})
 }
 
 // Property is item of Properties.

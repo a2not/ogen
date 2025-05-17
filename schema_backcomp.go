@@ -22,7 +22,7 @@ func (s *Schema) ToJSONSchema() *jsonschema.RawSchema {
 		Ref:                  s.Ref,
 		Summary:              s.Summary,
 		Description:          s.Description,
-		Type:                 s.Type,
+		Type:                 s.Type.ToJSONSchema(),
 		Format:               s.Format,
 		Properties:           s.Properties.ToJSONSchema(),
 		AdditionalProperties: s.AdditionalProperties.ToJSONSchema(),
@@ -56,6 +56,13 @@ func (s *Schema) ToJSONSchema() *jsonschema.RawSchema {
 		Example:              s.Example,
 		Common:               s.Common,
 	}
+}
+
+// ToJSONSchema converts Type to jsonschema.RawType.
+func (t Type) ToJSONSchema() jsonschema.RawType {
+	result := make(jsonschema.RawType, 0, len(t))
+	copy(result, t)
+	return result
 }
 
 // ToJSONSchema converts Properties to jsonschema.RawProperties.

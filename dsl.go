@@ -787,7 +787,7 @@ func (s *Schema) SetDescription(d string) *Schema {
 
 // SetType sets the Type of the Schema.
 func (s *Schema) SetType(t string) *Schema {
-	s.Type = t
+	s.Type = Type{t}
 	return s
 }
 
@@ -1037,7 +1037,7 @@ func schema(t, f string) *Schema {
 // AsArray returns a new "array" Schema wrapping the receiver.
 func (s *Schema) AsArray() *Schema {
 	return &Schema{
-		Type: jsonschema.Array.String(),
+		Type: Type{jsonschema.Array.String()},
 		Items: &Items{
 			Item: s,
 		},

@@ -87,27 +87,27 @@ func TestParseDiscriminator(t *testing.T) {
 					},
 				},
 				"Cat": {
-					Type:     "object",
+					Type:     ogen.Type{"object"},
 					Required: []string{"petType", "meow"},
 					Properties: ogen.Properties{
-						{Name: "petType", Schema: &ogen.Schema{Type: "string"}},
-						{Name: "meow", Schema: &ogen.Schema{Type: "string"}},
+						{Name: "petType", Schema: &ogen.Schema{Type: ogen.Type{"string"}}},
+						{Name: "meow", Schema: &ogen.Schema{Type: ogen.Type{"string"}}},
 					},
 				},
 				"Dog": {
-					Type:     "object",
+					Type:     ogen.Type{"object"},
 					Required: []string{"petType", "bark"},
 					Properties: ogen.Properties{
-						{Name: "petType", Schema: &ogen.Schema{Type: "string"}},
-						{Name: "bark", Schema: &ogen.Schema{Type: "string"}},
+						{Name: "petType", Schema: &ogen.Schema{Type: ogen.Type{"string"}}},
+						{Name: "bark", Schema: &ogen.Schema{Type: ogen.Type{"string"}}},
 					},
 				},
 				"Cow": {
-					Type:     "object",
+					Type:     ogen.Type{"object"},
 					Required: []string{"petType", "moo"},
 					Properties: ogen.Properties{
-						{Name: "petType", Schema: &ogen.Schema{Type: "string"}},
-						{Name: "moo", Schema: &ogen.Schema{Type: "string"}},
+						{Name: "petType", Schema: &ogen.Schema{Type: ogen.Type{"string"}}},
+						{Name: "moo", Schema: &ogen.Schema{Type: ogen.Type{"string"}}},
 					},
 				},
 			},

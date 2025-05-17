@@ -9,6 +9,84 @@ import (
 	"github.com/go-faster/yaml"
 )
 
+// RawType is unparsed JSON Schema type validator description.
+type RawType []string
+
+// MarshalYAML implements yaml.Marshaler.
+func (t RawType) MarshalYAML() (any, error) {
+	if len(t) == 1 {
+		return &yaml.Node{
+			Kind:  yaml.ScalarNode,
+			Value: t[0],
+		}, nil
+	}
+	content := make([]*yaml.Node, 0, len(t))
+	for _, typ := range t {
+		content = append(content,
+			&yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: typ},
+		)
+	}
+
+	return &yaml.Node{
+		Kind:    yaml.SequenceNode,
+		Content: content,
+	}, nil
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (t *RawType) UnmarshalYAML(node *yaml.Node) error {
+	switch node.Kind {
+	case yaml.ScalarNode:
+		t = &RawType{node.Value}
+		return nil
+	case yaml.SequenceNode:
+		types := make(RawType, 0, len(node.Content))
+		for _, typ := range node.Content {
+			types = append(types, typ.Value)
+		}
+		t = &types
+		return nil
+	default:
+		return &yaml.UnmarshalError{
+			Node: node,
+			Type: reflect.TypeOf(t),
+			Err:  errors.Errorf("cannot unmarshal %s into %T", node.ShortTag(), t),
+		}
+	}
+}
+
+// MarshalJSON implements json.Marshaler.
+func (t RawType) MarshalJSON() ([]byte, error) {
+	e := &jx.Encoder{}
+	if len(t) == 1 {
+		e.Str(t[0])
+	} else {
+		e.ArrStart()
+		for _, typ := range t {
+			e.Str(typ)
+		}
+		e.ArrEnd()
+	}
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (t *RawType) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	if typ, err := d.Str(); err == nil {
+		t = &RawType{typ}
+		return nil
+	}
+	return d.Arr(func(d *jx.Decoder) error {
+		typ, err := d.Str()
+		if err != nil {
+			return err
+		}
+		*t = append(*t, typ)
+		return nil
+	})
+}
+
 // RawProperty is item of RawProperties.
 type RawProperty struct {
 	Name   string

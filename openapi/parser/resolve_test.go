@@ -52,13 +52,13 @@ func TestComplicatedReference(t *testing.T) {
 						"201": {
 							Headers: map[string]*ogen.Header{
 								"ResponseHeader": {
-									Schema: &ogen.Schema{Type: "string"},
+									Schema: &ogen.Schema{Type: ogen.Type{"string"}},
 									Style:  "simple",
 								},
 							},
 							Content: map[string]ogen.Media{
 								"application/json": {
-									Schema: &ogen.Schema{Type: "string"},
+									Schema: &ogen.Schema{Type: ogen.Type{"string"}},
 								},
 							},
 						},
@@ -75,7 +75,7 @@ func TestComplicatedReference(t *testing.T) {
 							In:    "query",
 							Style: "form",
 							Schema: &ogen.Schema{
-								Type: "string",
+								Type: ogen.Type{"string"},
 							},
 						},
 					},
@@ -83,7 +83,7 @@ func TestComplicatedReference(t *testing.T) {
 						Content: map[string]ogen.Media{
 							"application/json": {
 								Schema: &ogen.Schema{
-									Type: "string",
+									Type: ogen.Type{"string"},
 								},
 							},
 						},
@@ -92,7 +92,7 @@ func TestComplicatedReference(t *testing.T) {
 						"200": {
 							Headers: map[string]*ogen.Header{
 								"ResponseHeader": {
-									Schema: &ogen.Schema{Type: "string"},
+									Schema: &ogen.Schema{Type: ogen.Type{"string"}},
 									Style:  "simple",
 								},
 							},
@@ -307,16 +307,16 @@ func TestParserNoPanic(t *testing.T) {
 			AnyOf: []*ogen.Schema{nil},
 		}),
 		schema(&ogen.Schema{
-			Type: "array",
+			Type: ogen.Type{"array"},
 		}),
 		schema(&ogen.Schema{
-			Type: "object",
+			Type: ogen.Type{"object"},
 			Properties: ogen.Properties{
 				{Name: "foo", Schema: nil},
 			},
 		}),
 		schema(&ogen.Schema{
-			Type: "object",
+			Type: ogen.Type{"object"},
 			PatternProperties: ogen.PatternProperties{
 				{Pattern: "foo", Schema: nil},
 			},

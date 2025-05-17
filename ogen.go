@@ -8,7 +8,7 @@ import (
 // Parse parses JSON/YAML into OpenAPI Spec.
 func Parse(data []byte) (s *Spec, err error) {
 	s = &Spec{}
-	if err := yaml.Unmarshal(data, s); err != nil {
+	if err := yaml.Unmarshal(data, s); err != nil { // TODO: what happens here
 		return nil, err
 	}
 	s.Init()

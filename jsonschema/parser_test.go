@@ -378,7 +378,7 @@ func TestSchemaExtensions(t *testing.T) {
 			false,
 		},
 		{
-			`{"type": ["string"], "x-ogen-name": "Foo"}`,
+			`{"type": ["string"], "x-ogen-name": "Foo"}`, //
 			&Schema{
 				Type:      String,
 				XOgenName: "Foo",
